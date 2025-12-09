@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudShare - Безопасный обмен файлами</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .api-notice {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <i class="fas fa-cloud-upload-alt"></i>
+                CloudShare
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">
+                    <i class="fas fa-home"></i> Главная
+                </a>
+                <a href="#upload-section" class="nav-link">
+                    <i class="fas fa-upload"></i> Загрузить
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <i class="fas fa-cloud"></i>
+                    Обменивайтесь файлами легко и безопасно
+                </h1>
+                
+                <div class="api-notice" id="api-notice">
+                    <i class="fas fa-server"></i>
+                    <strong>Внимание:</strong> Для работы приложения необходим бэкенд-сервер.
+                    <br>
+                    <small>См. инструкции в README.md для настройки</small>
+                </div>
+                
+                <div class="upload-card" id="upload-section">
+                    <!-- Остальной интерфейс загрузки -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>Фронтенд размещен на GitHub Pages | <a href="https://github.com/ваш-username/cloud-fileshare" style="color: white;">Исходный код</a></p>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script src="js/api.js"></script>
+</body>
+</html>
