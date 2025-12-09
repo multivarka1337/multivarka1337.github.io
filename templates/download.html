@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Скачать {{ file.original_filename }} - CloudShare{% endblock %}
+
+{% block content %}
+<div class="download-container">
+    <div class="download-card">
+        <div class="download-header {% if file.password %}protected{% endif %}">
+            {% if file.password %}
+            <i class="fas fa-lock"></i>
+            {% else %}
+            <i class="fas fa-file-download"></i>
+            {% endif %}
+            <h1>Скачать файл</h1>
+        </div>
+        
+        <div class="file-info">
+            <div class="file-icon">
+                <i class="fas fa-file"></i>
+            </div>
+            <div class="file-details">
+                <h2>{{ file.original_filename }}</h2>
+                <div class="file-meta">
+                    <p><i class="fas fa-calendar"></i> Загружен: {{ file.upload_date.strftime('%d.%m.%Y %H:%M') }}</p>
+                    <p><i class="fas fa-weight-hanging"></i> Размер: {{ (file.file_size / 1024 / 1024)|round(2) if file.file_size > 1024*1024 else (file.file_size / 1024)|round(2) }} {{ 'MB' if file.file_size > 1024*1024 else 'KB' }}</p>
+                    <p><i class="fas fa-download"></i> Скачиваний: {{ file.download_count }}</p>
+                </div>
+            </div>
+        </div>
+        
+        {% if file.password %}
+        <div class="password-prompt">
+            <h3><i class="fas fa-shield-alt"></i> Файл защищен паролем</h3>
+            <p>Для скачивания введите пароль:</p>
+            <div class="password-form">
+                <input type="password" id="download-password" placeholder="Введите пароль">
+                <button onclick="checkPassword()" class="btn btn-primary">
+                    <i class="fas fa-unlock"></i> Разблокировать
+                </button>
+            </div>
+            <p id="password-error" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i> Неверный пароль
+            </p>
+        </div>
+        {% endif %}
+        
+        <div class="download-actions" id="download-section" {% if file.password %}style="display: none;"{% endif %}>
+            <button onclick="downloadFile()" class="btn btn-download">
+                <i class="fas fa-download"></i> Скачать файл
+            </button>
+            
+            <div class="share-section">
+                <p>Поделиться ссылкой:</p>
+                <div class="link-container">
+                    <input type="text" id="share-link" value="{{ url_for('download_page', file_id=file.id, _external=True) }}" readonly>
+                    <button onclick="copyShareLink()" class="btn btn-secondary">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+                
+                <div class="social-share">
+                    <a href="https://wa.me/?text=Скачай%20файл:%20{{ url_for('download_page', file_id=file.id, _external=True) | urlencode }}" 
+                       target="_blank" class="btn btn-social whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </a>
+                    <a href="https://t.me/share/url?url={{ url_for('download_page', file_id=file.id, _external=True) | urlencode }}&text=Скачай%20файл" 
+                       target="_blank" class="btn btn-social telegram">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="mailto:?subject=Файл для скачивания&body=Скачай файл по ссылке: {{ url_for('download_page', file_id=file.id, _external=True) }}" 
+                       class="btn btn-social email">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="security-note">
+            <p><i class="fas fa-info-circle"></i> Этот файл будет автоматически удален через 30 дней</p>
+        </div>
+    </div>
+</div>
+
+<div class="instructions">
+    <h2 class="section-title">
+        <i class="fas fa-mobile-alt"></i> Как скачать на других устройствах?
+    </h2>
+    <div class="steps">
+        <div class="step">
+            <div class="step-icon">
+                <i class="fas fa-link"></i>
+            </div>
+            <h3>1. Скопируйте ссылку</h3>
+            <p>Нажмите на кнопку копирования выше</p>
+        </div>
+        <div class="step">
+            <div class="step-icon">
+                <i class="fas fa-share-alt"></i>
+            </div>
+            <h3>2. Отправьте себе</h3>
+            <p>Отправьте ссылку на телефон или другой компьютер</p>
+        </div>
+        <div class="step">
+            <div class="step-icon">
+                <i class="fas fa-download"></i>
+            </div>
+            <h3>3. Откройте и скачайте</h3>
+            <p>Откройте ссылку в браузере и нажмите "Скачать"</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function checkPassword() {
+        const password = document.getElementById('download-password').value;
+        const errorElement = document.getElementById('password-error');
+        
+        if (!password) {
+            errorElement.textContent = 'Введите пароль';
+            errorElement.style.display = 'block';
+            return;
+        }
+        
+        fetch('{{ url_for("download_file", file_id=file.id) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: new URLSearchParams({password: password})
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.querySelector('.password-prompt').style.display = 'none';
+                document.getElementById('download-section').style.display = 'block';
+                // Автоматически начинаем скачивание
+                setTimeout(downloadFile, 500);
+            } else {
+                errorElement.textContent = 'Неверный пароль';
+                errorElement.style.display = 'block';
+            }
+        })
+        .catch(error => {
+            errorElement.textContent = 'Ошибка проверки пароля';
+            errorElement.style.display = 'block';
+        });
+    }
+    
+    function downloadFile() {
+        window.location.href = '{{ url_for("download_file", file_id=file.id) }}';
+    }
+    
+    function copyShareLink() {
+        const linkInput = document.getElementById('share-link');
+        linkInput.select();
+        linkInput.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(linkInput.value);
+        
+        // Показываем уведомление
+        const originalText = event.target.innerHTML;
+        event.target.innerHTML = '<i class="fas fa-check"></i> Скопировано!';
+        event.target.classList.add('btn-success');
+        
+        setTimeout(() => {
+            event.target.innerHTML = originalText;
+            event.target.classList.remove('btn-success');
+        }, 2000);
+    }
+</script>
+{% endblock %}
