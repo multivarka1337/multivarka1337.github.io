@@ -45,6 +45,92 @@
             font-size: 0.9rem;
         }
         
+        .setup-panel {
+            background-color: #1a1a1a;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px;
+            border: 1px solid #333;
+        }
+        
+        .setup-panel.hidden {
+            display: none;
+        }
+        
+        .setup-panel h3 {
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .setup-panel ol {
+            margin-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .setup-panel li {
+            margin-bottom: 10px;
+        }
+        
+        .setup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            color: #ddd;
+        }
+        
+        input, select {
+            padding: 10px;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        
+        .form-hint {
+            font-size: 0.85rem;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        
+        .btn:hover {
+            background-color: #3a80d2;
+            transform: translateY(-2px);
+        }
+        
+        .btn:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
         .main-content {
             display: flex;
             flex: 1;
@@ -101,6 +187,7 @@
             gap: 20px;
             color: #888;
             font-size: 0.9rem;
+            flex-wrap: wrap;
         }
         
         .playlist-section {
@@ -124,12 +211,14 @@
         .playlist-header {
             padding: 20px;
             border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
         .playlist-header h3 {
             font-size: 1.2rem;
             color: #fff;
-            margin-bottom: 5px;
         }
         
         .video-count {
@@ -190,6 +279,14 @@
             color: #888;
         }
         
+        .video-item-path {
+            font-size: 0.75rem;
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
         .empty-state {
             display: flex;
             flex-direction: column;
@@ -217,31 +314,6 @@
             margin-bottom: 20px;
             max-width: 400px;
             line-height: 1.5;
-        }
-        
-        .btn {
-            background-color: #4a90e2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .btn:hover {
-            background-color: #3a80d2;
-            transform: translateY(-2px);
-        }
-        
-        footer {
-            padding: 15px;
-            text-align: center;
-            border-top: 1px solid #222;
-            background-color: #111;
-            color: #666;
-            font-size: 0.8rem;
         }
         
         .controls {
@@ -275,6 +347,15 @@
         
         .control-btn.primary:hover {
             background-color: #3a80d2;
+        }
+        
+        footer {
+            padding: 15px;
+            text-align: center;
+            border-top: 1px solid #222;
+            background-color: #111;
+            color: #666;
+            font-size: 0.8rem;
         }
         
         /* Стили для полосы прокрутки */
@@ -313,16 +394,106 @@
         .hidden {
             display: none !important;
         }
+        
+        .error-message {
+            background-color: #442222;
+            border: 1px solid #ff4444;
+            color: #ff8888;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        
+        .success-message {
+            background-color: #224422;
+            border: 1px solid #44ff44;
+            color: #88ff88;
+            padding: 10px 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        
+        .config-badge {
+            display: inline-block;
+            background-color: #2a2a2a;
+            color: #888;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        code {
+            background-color: #2a2a2a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #6aedff;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Видеоплеер</h1>
-            <p class="subtitle">Автоматическое обнаружение видео из папки /videos</p>
+            <h1>Видеоплеер с GitHub API</h1>
+            <p class="subtitle">Автоматическое обнаружение видео из вашего репозитория</p>
         </header>
         
-        <div class="main-content">
+        <div class="setup-panel" id="setupPanel">
+            <h3>📋 Настройка доступа к репозиторию</h3>
+            
+            <ol>
+                <li>Создайте классический Personal Access Token на GitHub</li>
+                <li>Укажите данные вашего репозитория</li>
+                <li>Нажмите "Загрузить видео"</li>
+            </ol>
+            
+            <div class="setup-form">
+                <div class="form-group">
+                    <label for="repoOwner">Владелец репозитория:</label>
+                    <input type="text" id="repoOwner" placeholder="your-username">
+                    <div class="form-hint">Ваше имя пользователя на GitHub</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="repoName">Название репозитория:</label>
+                    <input type="text" id="repoName" placeholder="video-repository">
+                    <div class="form-hint">Название репозитория где лежат видео</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="repoBranch">Ветка:</label>
+                    <input type="text" id="repoBranch" value="main" placeholder="main">
+                    <div class="form-hint">Обычно "main" или "master"</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="videoPath">Путь к папке с видео:</label>
+                    <input type="text" id="videoPath" value="videos" placeholder="videos">
+                    <div class="form-hint">Папка в репозитории где лежат видеофайлы</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="githubToken">GitHub Token (необязательно):</label>
+                    <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                    <div class="form-hint">Требуется только для приватных репозиториев</div>
+                </div>
+                
+                <div id="messageArea"></div>
+                
+                <button class="btn" id="loadVideosBtn">
+                    <span>🎬</span> Загрузить видео из репозитория
+                </button>
+                
+                <div class="form-hint">
+                    <strong>Важно:</strong> Для публичных репозиториев токен не обязателен, но с ним выше лимиты запросов.
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content hidden" id="mainContent">
             <section class="video-section">
                 <div class="video-container">
                     <video id="videoPlayer" controls>
@@ -350,6 +521,9 @@
                             <button class="control-btn" id="muteBtn">
                                 <span>🔊</span> Выкл/Вкл звук
                             </button>
+                            <button class="control-btn" id="configBtn">
+                                <span>⚙️</span> Настройки
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -357,23 +531,29 @@
             
             <section class="playlist-section">
                 <div class="playlist-header">
-                    <h3>Доступные видео</h3>
-                    <div class="video-count">
-                        <span id="videoCount">0</span> видеофайлов
+                    <div>
+                        <h3>Доступные видео</h3>
+                        <div class="video-count">
+                            <span id="videoCount">0</span> видеофайлов
+                            <span class="config-badge" id="repoInfo"></span>
+                        </div>
                     </div>
+                    <button class="control-btn" id="refreshListBtn">
+                        <span>🔄</span> Обновить
+                    </button>
                 </div>
                 
                 <div class="playlist-container" id="playlistContainer">
                     <div id="loadingState" class="empty-state">
                         <div class="loading"></div>
-                        <p>Поиск видеофайлов в папке /videos...</p>
+                        <p>Загрузка видео из репозитория...</p>
                     </div>
                     
                     <div id="emptyState" class="empty-state hidden">
                         <div class="empty-icon">🎬</div>
                         <h3>Видеофайлы не найдены</h3>
-                        <p>Создайте папку <code>/videos</code> в вашем репозитории и загрузите туда видеофайлы (MP4, WebM, OGG)</p>
-                        <button class="btn" id="refreshBtn">Обновить список</button>
+                        <p>В указанной папке репозитория не найдено видеофайлов</p>
+                        <button class="btn" id="changeConfigBtn">Изменить настройки</button>
                     </div>
                     
                     <div id="playlistContent" class="hidden">
@@ -384,12 +564,23 @@
         </div>
         
         <footer>
-            <p>Видео автоматически загружаются из папки /videos в репозитории</p>
+            <p>Видео загружаются из GitHub репозитория через API | <a href="#" id="showConfigLink" style="color: #4a90e2;">Настройки</a></p>
         </footer>
     </div>
 
     <script>
+        // Конфигурация по умолчанию
+        const defaultConfig = {
+            repoOwner: '',
+            repoName: '',
+            repoBranch: 'main',
+            videoPath: 'videos',
+            githubToken: ''
+        };
+        
         // Получаем элементы DOM
+        const setupPanel = document.getElementById('setupPanel');
+        const mainContent = document.getElementById('mainContent');
         const videoPlayer = document.getElementById('videoPlayer');
         const currentVideoTitle = document.getElementById('currentVideoTitle');
         const videoFormat = document.getElementById('videoFormat');
@@ -400,121 +591,267 @@
         const loadingState = document.getElementById('loadingState');
         const emptyState = document.getElementById('emptyState');
         const videoCount = document.getElementById('videoCount');
-        const refreshBtn = document.getElementById('refreshBtn');
+        const repoInfo = document.getElementById('repoInfo');
+        const messageArea = document.getElementById('messageArea');
         
-        // Кнопки управления
+        // Элементы формы
+        const repoOwnerInput = document.getElementById('repoOwner');
+        const repoNameInput = document.getElementById('repoName');
+        const repoBranchInput = document.getElementById('repoBranch');
+        const videoPathInput = document.getElementById('videoPath');
+        const githubTokenInput = document.getElementById('githubToken');
+        
+        // Кнопки
+        const loadVideosBtn = document.getElementById('loadVideosBtn');
+        const refreshListBtn = document.getElementById('refreshListBtn');
+        const changeConfigBtn = document.getElementById('changeConfigBtn');
+        const configBtn = document.getElementById('configBtn');
         const playBtn = document.getElementById('playBtn');
         const pauseBtn = document.getElementById('pauseBtn');
         const fullscreenBtn = document.getElementById('fullscreenBtn');
         const muteBtn = document.getElementById('muteBtn');
+        const showConfigLink = document.getElementById('showConfigLink');
         
         // Список видеофайлов
         let videoFiles = [];
+        let currentConfig = { ...defaultConfig };
         
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            // Настраиваем обработчики событий для кнопок
+            // Загружаем сохраненную конфигурацию
+            loadSavedConfig();
+            
+            // Настраиваем обработчики событий
             setupEventListeners();
             
-            // Ищем видеофайлы в папке /videos
-            discoverVideoFiles();
+            // Проверяем, есть ли сохраненная конфигурация
+            if (currentConfig.repoOwner && currentConfig.repoName) {
+                // Показываем основное содержимое и загружаем видео
+                switchToMainView();
+                loadVideosFromRepo();
+            }
         });
         
-        // Функция для поиска видеофайлов в папке /videos
-        async function discoverVideoFiles() {
-            showLoadingState();
-            
-            try {
-                // Пытаемся получить список файлов из папки /videos
-                // В реальном проекте на GitHub Pages мы бы использовали GitHub API
-                // Но здесь мы эмулируем этот процесс с примером структуры
-                
-                // Сначала проверяем, есть ли сохраненные видео из предыдущих сессий
-                const savedVideos = localStorage.getItem('discoveredVideos');
-                if (savedVideos) {
-                    try {
-                        videoFiles = JSON.parse(savedVideos);
-                        if (videoFiles.length > 0) {
-                            displayVideoList();
-                            return;
-                        }
-                    } catch(e) {
-                        console.error("Ошибка при загрузке сохраненных видео:", e);
-                    }
+        // Функция загрузки сохраненной конфигурации
+        function loadSavedConfig() {
+            const savedConfig = localStorage.getItem('videoPlayerConfig');
+            if (savedConfig) {
+                try {
+                    currentConfig = { ...defaultConfig, ...JSON.parse(savedConfig) };
+                    
+                    // Заполняем поля формы
+                    repoOwnerInput.value = currentConfig.repoOwner;
+                    repoNameInput.value = currentConfig.repoName;
+                    repoBranchInput.value = currentConfig.repoBranch;
+                    videoPathInput.value = currentConfig.videoPath;
+                    githubTokenInput.value = currentConfig.githubToken;
+                } catch (e) {
+                    console.error('Ошибка при загрузке конфигурации:', e);
                 }
-                
-                // Ищем видеофайлы в разных возможных местах
-                await searchForVideoFiles();
-                
-            } catch (error) {
-                console.error("Ошибка при поиске видеофайлов:", error);
-                showEmptyState();
             }
         }
         
-        // Функция поиска видеофайлов
-        async function searchForVideoFiles() {
-            // Массив для хранения найденных видео
-            const foundVideos = [];
+        // Функция сохранения конфигурации
+        function saveConfig() {
+            currentConfig = {
+                repoOwner: repoOwnerInput.value.trim(),
+                repoName: repoNameInput.value.trim(),
+                repoBranch: repoBranchInput.value.trim() || 'main',
+                videoPath: videoPathInput.value.trim() || 'videos',
+                githubToken: githubTokenInput.value.trim()
+            };
             
-            // Список возможных местоположений видеофайлов
-            const videoLocations = [
-                'videos/',
-                './videos/',
-                '/videos/',
-                '../videos/'
-            ];
-            
-            // Расширения видеофайлов, которые мы ищем
-            const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv'];
-            
-            // Имена примеров видео для демонстрации
-            const exampleVideos = [
-                { name: "Пример видео 1.mp4", size: "15.2 МБ" },
-                { name: "Демонстрация.mp4", size: "8.7 МБ" },
-                { name: "Презентация.webm", size: "22.1 МБ" },
-                { name: "Инструкция.ogg", size: "5.3 МБ" }
-            ];
-            
-            // В реальном проекте здесь был бы код для запроса к GitHub API
-            // или сканирования структуры репозитория
-            
-            // Для демонстрации добавляем примеры видео
-            // В реальном использовании пользователь заменит этот код
-            exampleVideos.forEach((video, index) => {
-                const extension = video.name.split('.').pop().toLowerCase();
-                const isVideo = videoExtensions.includes('.' + extension);
+            localStorage.setItem('videoPlayerConfig', JSON.stringify(currentConfig));
+            return currentConfig;
+        }
+        
+        // Функция настройки обработчиков событий
+        function setupEventListeners() {
+            // Кнопка загрузки видео из репозитория
+            loadVideosBtn.addEventListener('click', function() {
+                const config = saveConfig();
                 
-                if (isVideo) {
-                    // Создаем URL для примера видео (используем примеры с YouTube)
-                    const exampleUrls = [
-                        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-                        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-                        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-                        "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
-                    ];
-                    
-                    foundVideos.push({
-                        name: video.name,
-                        url: exampleUrls[index % exampleUrls.length],
-                        size: video.size,
-                        path: `videos/${video.name}`
-                    });
+                if (!config.repoOwner || !config.repoName) {
+                    showMessage('Пожалуйста, укажите владельца и название репозитория', 'error');
+                    return;
+                }
+                
+                loadVideosFromRepo();
+            });
+            
+            // Кнопка обновления списка
+            refreshListBtn.addEventListener('click', function() {
+                loadVideosFromRepo();
+            });
+            
+            // Кнопка изменения конфигурации
+            changeConfigBtn.addEventListener('click', function() {
+                switchToSetupView();
+            });
+            
+            // Кнопка настроек
+            configBtn.addEventListener('click', function() {
+                switchToSetupView();
+            });
+            
+            // Ссылка на настройки в футере
+            showConfigLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                switchToSetupView();
+            });
+            
+            // Управление видео
+            playBtn.addEventListener('click', function() {
+                videoPlayer.play();
+                updatePlayButtonState(true);
+            });
+            
+            pauseBtn.addEventListener('click', function() {
+                videoPlayer.pause();
+                updatePlayButtonState(false);
+            });
+            
+            fullscreenBtn.addEventListener('click', function() {
+                if (videoPlayer.requestFullscreen) {
+                    videoPlayer.requestFullscreen();
+                } else if (videoPlayer.webkitRequestFullscreen) {
+                    videoPlayer.webkitRequestFullscreen();
+                } else if (videoPlayer.mozRequestFullScreen) {
+                    videoPlayer.mozRequestFullScreen();
+                } else if (videoPlayer.msRequestFullscreen) {
+                    videoPlayer.msRequestFullscreen();
                 }
             });
             
-            // Сохраняем найденные видео
-            videoFiles = foundVideos;
+            muteBtn.addEventListener('click', function() {
+                videoPlayer.muted = !videoPlayer.muted;
+                updateMuteButtonState();
+            });
             
-            // Сохраняем в localStorage для демонстрации
-            localStorage.setItem('discoveredVideos', JSON.stringify(videoFiles));
+            // Обновление состояния кнопок при изменении состояния видео
+            videoPlayer.addEventListener('play', function() {
+                updatePlayButtonState(true);
+            });
             
-            // Отображаем список
-            if (videoFiles.length > 0) {
-                displayVideoList();
-            } else {
+            videoPlayer.addEventListener('pause', function() {
+                updatePlayButtonState(false);
+            });
+            
+            videoPlayer.addEventListener('volumechange', function() {
+                updateMuteButtonState();
+            });
+        }
+        
+        // Функция переключения на вид настроек
+        function switchToSetupView() {
+            setupPanel.classList.remove('hidden');
+            mainContent.classList.add('hidden');
+            loadSavedConfig(); // Загружаем сохраненную конфигурацию
+        }
+        
+        // Функция переключения на основной вид
+        function switchToMainView() {
+            setupPanel.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            
+            // Обновляем информацию о репозитории
+            repoInfo.textContent = `${currentConfig.repoOwner}/${currentConfig.repoName}`;
+        }
+        
+        // Функция загрузки видео из репозитория через GitHub API
+        async function loadVideosFromRepo() {
+            showLoadingState();
+            clearMessage();
+            
+            try {
+                const config = saveConfig();
+                switchToMainView();
+                
+                // Получаем список файлов из репозитория
+                const files = await getRepoFiles(config);
+                
+                // Фильтруем видеофайлы
+                videoFiles = filterVideoFiles(files);
+                
+                // Отображаем список
+                if (videoFiles.length > 0) {
+                    displayVideoList();
+                    showMessage(`Найдено ${videoFiles.length} видеофайлов`, 'success');
+                } else {
+                    showEmptyState();
+                    showMessage('Видеофайлы не найдены в указанной папке', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Ошибка при загрузке видео:', error);
                 showEmptyState();
+                showMessage(`Ошибка: ${error.message}`, 'error');
             }
+        }
+        
+        // Функция получения файлов из репозитория через GitHub API
+        async function getRepoFiles(config) {
+            const { repoOwner, repoName, repoBranch, videoPath, githubToken } = config;
+            
+            // Базовый URL для GitHub API
+            const apiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${videoPath}?ref=${repoBranch}`;
+            
+            // Заголовки для запроса
+            const headers = {
+                'Accept': 'application/vnd.github.v3+json',
+                'User-Agent': 'GitHub-Video-Player'
+            };
+            
+            // Добавляем токен, если он указан
+            if (githubToken) {
+                headers['Authorization'] = `token ${githubToken}`;
+            }
+            
+            // Выполняем запрос
+            const response = await fetch(apiUrl, { headers });
+            
+            if (!response.ok) {
+                if (response.status === 404) {
+                    throw new Error('Папка не найдена. Проверьте путь к папке с видео.');
+                } else if (response.status === 403) {
+                    throw new Error('Доступ запрещен. Возможно, репозиторий приватный и требуется токен.');
+                } else if (response.status === 401) {
+                    throw new Error('Не авторизован. Проверьте токен доступа.');
+                } else {
+                    throw new Error(`Ошибка GitHub API: ${response.status} ${response.statusText}`);
+                }
+            }
+            
+            const data = await response.json();
+            
+            // Если это массив файлов - возвращаем его
+            if (Array.isArray(data)) {
+                return data;
+            } else {
+                // Если это один файл, возвращаем его в массиве
+                return [data];
+            }
+        }
+        
+        // Функция фильтрации видеофайлов
+        function filterVideoFiles(files) {
+            const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv', '.wmv', '.flv'];
+            
+            return files
+                .filter(file => {
+                    // Проверяем, что это файл (не папка)
+                    if (file.type !== 'file') return false;
+                    
+                    // Проверяем расширение файла
+                    const fileName = file.name.toLowerCase();
+                    return videoExtensions.some(ext => fileName.endsWith(ext));
+                })
+                .map(file => ({
+                    name: file.name,
+                    url: file.download_url,
+                    size: formatFileSize(file.size),
+                    path: file.path
+                }));
         }
         
         // Функция отображения списка видео
@@ -531,11 +868,16 @@
                 videoItem.className = 'video-item';
                 videoItem.dataset.index = index;
                 
+                // Отображаем путь к файлу относительно папки с видео
+                const relativePath = video.path.replace(`${currentConfig.videoPath}/`, '');
+                const displayPath = relativePath === video.name ? '' : `.../${relativePath}`;
+                
                 videoItem.innerHTML = `
                     <div class="video-icon">🎬</div>
                     <div class="video-item-info">
                         <div class="video-item-name">${video.name}</div>
                         <div class="video-item-size">${video.size || 'Размер неизвестен'}</div>
+                        ${displayPath ? `<div class="video-item-path">${displayPath}</div>` : ''}
                     </div>
                 `;
                 
@@ -564,8 +906,11 @@
             // Загружаем первое видео, если список не пустой
             if (videoFiles.length > 0) {
                 // Активируем первый элемент
-                playlistContent.firstChild.classList.add('active');
-                loadVideo(0);
+                const firstItem = playlistContent.firstChild;
+                if (firstItem) {
+                    firstItem.classList.add('active');
+                    loadVideo(0);
+                }
             }
         }
         
@@ -586,23 +931,13 @@
             
             // Когда видео загружено, получаем информацию о нем
             videoPlayer.addEventListener('loadedmetadata', function onLoad() {
-                // Определяем формат видео из URL
-                const urlParts = video.url.split('.');
-                const format = urlParts.length > 1 ? urlParts.pop().toUpperCase() : 'Неизвестно';
-                videoFormat.textContent = format;
+                // Определяем формат видео из имени файла
+                const extension = video.name.split('.').pop().toUpperCase();
+                videoFormat.textContent = extension;
                 
                 // Определяем разрешение видео
                 const resolution = `${videoPlayer.videoWidth} × ${videoPlayer.videoHeight}`;
                 videoResolution.textContent = resolution;
-                
-                // Обновляем информацию о размере, если она не была указана
-                if (!video.size || video.size === 'Загрузка...') {
-                    getVideoFileSize(video.url).then(size => {
-                        videoSize.textContent = formatFileSize(size);
-                    }).catch(() => {
-                        videoSize.textContent = 'Неизвестно';
-                    });
-                }
                 
                 // Удаляем обработчик, чтобы он не срабатывал повторно
                 videoPlayer.removeEventListener('loadedmetadata', onLoad);
@@ -614,81 +949,15 @@
             });
         }
         
-        // Функция для получения размера файла
-        async function getVideoFileSize(url) {
-            try {
-                const response = await fetch(url, { method: 'HEAD' });
-                if (response.ok) {
-                    const size = response.headers.get('Content-Length');
-                    return size ? parseInt(size) : 0;
-                }
-                return 0;
-            } catch (error) {
-                return 0;
-            }
-        }
-        
         // Функция форматирования размера файла
         function formatFileSize(bytes) {
-            if (bytes === 0) return '0 Байт';
+            if (!bytes || bytes === 0) return '0 Байт';
             
             const k = 1024;
             const sizes = ['Байт', 'КБ', 'МБ', 'ГБ'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-        
-        // Функция настройки обработчиков событий
-        function setupEventListeners() {
-            // Кнопка воспроизведения
-            playBtn.addEventListener('click', function() {
-                videoPlayer.play();
-                updatePlayButtonState(true);
-            });
-            
-            // Кнопка паузы
-            pauseBtn.addEventListener('click', function() {
-                videoPlayer.pause();
-                updatePlayButtonState(false);
-            });
-            
-            // Кнопка полного экрана
-            fullscreenBtn.addEventListener('click', function() {
-                if (videoPlayer.requestFullscreen) {
-                    videoPlayer.requestFullscreen();
-                } else if (videoPlayer.webkitRequestFullscreen) {
-                    videoPlayer.webkitRequestFullscreen();
-                } else if (videoPlayer.mozRequestFullScreen) {
-                    videoPlayer.mozRequestFullScreen();
-                } else if (videoPlayer.msRequestFullscreen) {
-                    videoPlayer.msRequestFullscreen();
-                }
-            });
-            
-            // Кнопка отключения звука
-            muteBtn.addEventListener('click', function() {
-                videoPlayer.muted = !videoPlayer.muted;
-                updateMuteButtonState();
-            });
-            
-            // Кнопка обновления списка
-            refreshBtn.addEventListener('click', function() {
-                discoverVideoFiles();
-            });
-            
-            // Обновление состояния кнопок при изменении состояния видео
-            videoPlayer.addEventListener('play', function() {
-                updatePlayButtonState(true);
-            });
-            
-            videoPlayer.addEventListener('pause', function() {
-                updatePlayButtonState(false);
-            });
-            
-            videoPlayer.addEventListener('volumechange', function() {
-                updateMuteButtonState();
-            });
         }
         
         // Функция обновления состояния кнопки воспроизведения
@@ -716,6 +985,8 @@
             loadingState.classList.remove('hidden');
             emptyState.classList.add('hidden');
             playlistContent.classList.add('hidden');
+            loadVideosBtn.disabled = true;
+            loadVideosBtn.innerHTML = '<div class="loading"></div> Загрузка...';
         }
         
         // Функция показа пустого состояния
@@ -723,21 +994,25 @@
             loadingState.classList.add('hidden');
             emptyState.classList.remove('hidden');
             playlistContent.classList.add('hidden');
-            videoCount.textContent = '0';
+            loadVideosBtn.disabled = false;
+            loadVideosBtn.innerHTML = '<span>🎬</span> Загрузить видео из репозитория';
         }
         
-        // Функция для добавления пользовательских видео (для демонстрации)
-        function setupDemoMode() {
-            // Добавляем обработчик для сообщений в консоль
-            console.log("Видеоплеер готов к использованию!");
-            console.log("Чтобы добавить свои видео:");
-            console.log("1. Создайте папку 'videos' в вашем репозитории");
-            console.log("2. Загрузите туда видеофайлы (MP4, WebM, OGG)");
-            console.log("3. Обновите страницу");
+        // Функция показа сообщения
+        function showMessage(text, type = 'info') {
+            messageArea.innerHTML = '';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'error-message' : 'success-message';
+            messageDiv.textContent = text;
+            
+            messageArea.appendChild(messageDiv);
         }
         
-        // Запускаем демо-режим
-        setupDemoMode();
+        // Функция очистки сообщений
+        function clearMessage() {
+            messageArea.innerHTML = '';
+        }
     </script>
 </body>
 </html>
